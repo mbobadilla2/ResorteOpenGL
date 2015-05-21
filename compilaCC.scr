@@ -1,0 +1,1 @@
+g++ -o lee_obj lee_obj.cpp -lSDL -lGL -lGLU

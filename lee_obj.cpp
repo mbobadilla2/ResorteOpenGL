@@ -135,7 +135,7 @@ void init()
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_DEPTH_TEST);
 	
-	cube=loadObject("yunque.obj");
+	cube=loadObject("resorte.obj");
 	
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
@@ -144,22 +144,25 @@ void init()
 	x=-5;
 	pasox=0.1;
 }
-
+float xc=2, incX = -0.01;
 void display()
 {   
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
+	
 	float pos[]={-1.0,1.0,-2.0,1.0},y;
 	glLightfv(GL_LIGHT0,GL_POSITION,pos);
 	y=3*sin(((x*2*3.1416)/(5)));
-	glTranslatef(x,y,-15.0);
-	glRotatef(angle,0.0,1.0,0.0);
+	glTranslatef(0,0,-30.0);
+//	glRotatef(angle,0.0,1.0,0.0);
 	glPolygonMode(GL_FRONT, GL_FILL);
     glColorMaterial (GL_FRONT, GL_AMBIENT);	
     glEnable(GL_COLOR_MATERIAL);
 	glColor3f(1,0.0,0.0);
-glCallList(cube);
-
+	glScalef(1,xc,1);
+    glCallList(cube);
+	xc+=incX;
+	if(xc<=0.5 || xc >= 2){incX*=-1;}
 }
 
 

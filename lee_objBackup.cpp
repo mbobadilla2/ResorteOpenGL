@@ -133,7 +133,7 @@ void init()
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(45,640.0/480.0,1.0,500.0);
-	gluLookAt(40,15,35,0,0,0,0,16,0);
+	gluLookAt(20,25,25,0,0,0,0,4,0);
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_DEPTH_TEST);
 	
@@ -161,19 +161,13 @@ void display()
     glColorMaterial (GL_FRONT, GL_AMBIENT);	
     glEnable(GL_COLOR_MATERIAL);
 	glColor3f(1,0.0,0.0);
-	
 	glScalef(1,xc,1);
-	
     glCallList(cube);
+    glLoadIdentity();
+    glTranslatef(5.0,0.0,0.0);
+    glCallList(yunque);
 	xc+=incX;
 	if(xc<=0.5 || xc >= 2){incX*=-1;}
-	
-	//Yunque
-	glLoadIdentity();
-	
-    glTranslatef(0,2.5+xc*5,1.5);
-    glScalef(0.8, 0.8, 0.8);
-    glCallList(yunque);
 }
 
 

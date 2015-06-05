@@ -133,7 +133,7 @@ void init()
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(45,640.0/480.0,1.0,500.0);
-	gluLookAt(40,15,35,0,0,0,0,16,0);
+	gluLookAt(15,5,25,0,0,0,0,16,0);
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_DEPTH_TEST);
 	
@@ -146,34 +146,92 @@ void init()
 	x=-5;
 	pasox=0.1;
 }
-float xc=2, incX = -0.01;
-void display()
-{   
+void malla(){
+		int x=-10;
+		int i;
+		glBegin(GL_LINES);
+		for(i=x;i<=-x;i+=1){
+			glVertex3f(x,0,i);
+			glVertex3f(-x,0,i);
+			glVertex3f(i,0,-x);
+			glVertex3f(i,0,x);
+			
+			}
+		glEnd();
+}
+float xc=1.2, incX = -0.01;
+float yYunque=15;
+void display(){   
+	
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 	
 	float pos[]={20.0,2.0,4.0,1.0},y;
 	glLightfv(GL_LIGHT0,GL_POSITION,pos);
-	y=3*sin(((x*2*3.1416)/(5)));
-	//glTranslatef(0,-3,-30.0);
-//	glRotatef(angle,0.0,1.0,0.0);
+	
+	
 	glPolygonMode(GL_FRONT, GL_FILL);
     glColorMaterial (GL_FRONT, GL_AMBIENT);	
     glEnable(GL_COLOR_MATERIAL);
-	glColor3f(1,0.0,0.0);
+   
+  
+   
+    glTranslatef(0,-7,0);
+    glPushMatrix();
+      malla();
+    glRotatef(90,1,0,0);
+    malla();
+     glPopMatrix();
+    glColor3f(1,0.0,0.0);
+    if(yYunque<=9.5){
+	glPushMatrix();
+  //  glLoadIdentity();
 	
+	
+	float traslado=(xc*0.75);
+	glTranslatef(0,traslado,0);
 	glScalef(1,xc,1);
-	
     glCallList(cube);
+  glPopMatrix();
 	xc+=incX;
-	if(xc<=0.5 || xc >= 2){incX*=-1;}
+	
+	if(xc<=0.5 || xc >= 1.2){incX*=-1;if(xc>=1.2){
+		yYunque=15;}
+		}
 	
 	//Yunque
-	glLoadIdentity();
+	glPushMatrix();
+	//glLoadIdentity();
 	
-    glTranslatef(0,2.5+xc*5,1.5);
+    glTranslatef(3,(xc*8),0);
     glScalef(0.8, 0.8, 0.8);
+    glRotatef(90,0,1,0);
     glCallList(yunque);
+    glPopMatrix();
+    
+    
+	}else{
+			glPushMatrix();
+	//glLoadIdentity();
+
+	float traslado=(xc*0.75);
+	glTranslatef(0,traslado,0);
+	glScalef(1,xc,1);
+    glCallList(cube);
+    glPopMatrix();
+    
+    	glPushMatrix();
+   // glLoadIdentity();
+	
+    glTranslatef(3,yYunque,0);
+    glScalef(0.8, 0.8, 0.8);
+    glRotatef(90,0,1,0);
+    glCallList(yunque);
+    glPopMatrix();
+    
+			yYunque-=0.1;
+	}
+    //printf("traslado en x= %f \t valor de xc= %f\n",traslado,xc);
 }
 
 

@@ -10,6 +10,11 @@
 #include <cstdio>
 #include <iostream>
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+int posX = 15;
 
 /*Textura*/
 
@@ -13292,8 +13297,6 @@ four=true;
 }
 };
 
-float angle=0.0;
-
 int loadObject(const char* filename)
 {
 	std::vector<std::string*> coord;
@@ -13382,21 +13385,29 @@ int loadObject(const char* filename)
 	return num;
 }
 
-int cube;
-int yunque;
-void init()
+	////////////////////////////////////
+	/////////// VARIABLES //////////////
+	////////////////////////////////////
+	
+int resorte; //direccion donde se encuetra el resorte
+int yunque; //direccion donde se encuentra el yunque
+float yC=1.2; 			//Escalacion en Y del resorte 
+float incY = -0.01; 	//Incremento para la escalacion del resorte
+float yYunque=15;		//Punto de inicio en y del resorte 
+float subir;
 
+void init()
 {
 	glClearColor(1.0,1.0,1.0,1.0);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(45,640.0/480.0,1.0,500.0);
 	//gluLookAt(15,5,25,0,0,0,0,16,0);
-	gluLookAt(0, 5, 55, 0, 0, 0, 0, 6, 0);
+	gluLookAt(0, 10, 45, 0, 0, 0, 0, 36, 0);
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_DEPTH_TEST);
 	
-	cube=loadObject("resorte.obj");
+	resorte=loadObject("resorte.obj");
 	yunque=loadObject("yunque.obj");	
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
@@ -13420,13 +13431,12 @@ void malla(){
 		glEnd();
 }
 
-float xc=1.2, incX = -0.01;
-float yYunque=15;
+
 
 void pintarFondo(int xpared){
 	//glLoadIdentity();
 	
-	glColor3f(0,0,1);
+	glColor3f(1,1,1);
 	glBegin(GL_QUADS);
 		glTexCoord2d(0.0, 0.0);
 		glVertex3f(-xpared, xpared, -xpared);
@@ -13453,7 +13463,7 @@ void cargarFondo(){
 	//glPushMatrix();
 	glEnable(GL_TEXTURE_2D);		// Habilita la GL_TEXTURE_2D
 	define_textura_2D_128(gimp_image_centro);
-	glTranslatef(0,-5,0);
+	glTranslatef(0,-10,0);
 	pintarFondo(xfondo);
 	glDisable(GL_TEXTURE_2D);		// Deshabilita la GL_TEXTURE_2D
 	//glPopMatrix();
@@ -13464,9 +13474,10 @@ void cargarFondo(){
 	glEnable(GL_TEXTURE_2D);		// Habilita la GL_TEXTURE_2D
 	define_textura_2D_128(gimp_image_izquierda);
 	glTranslatef((-xfondo*2)+0.5, 0, 0);
-	//glTranslatef(-xfondo/2+10, -1, 0);
-	//glRotatef(80, 0, 1, 0);
+	//glTranslatef(-xfondo/2+20, -1, 0);
+	//glRotatef(90, 0, 1, 0);
 	pintarFondo(xfondo);
+	//glRotatef(90, 0, 1, 0);
 	glDisable(GL_TEXTURE_2D);		// Deshabilita la GL_TEXTURE_2D
 	//glPopMatrix();
 	
@@ -13518,86 +13529,174 @@ void cargarFondo(){
 	//glPopMatrix();	
 }
 
+
+void keyboard(unsigned char key, int x, int y){
+	float t;
+	
+	switch(key){
+		case 'q':
+			posX ++;
+		break;
+		
+		
+	}
+	
+}
+
+void luces(){ 
+	GLfloat luz_ambiental[] = { 1, 1, 1, 0.0 };
+    GLfloat light_position[] = { 10, 10, 10,1}; //posicion de la luz X, Y , Z y direccional o no
+    GLfloat light_spot1[]= {-10, -10, -40}; //donde termina la luz
+    GLfloat light_exponent[]={0.0};
+    GLfloat light_cut[]={360.0};   //Abertura en grados del foco
+    GLfloat light_atenuacion[]={0.5}; //coeficiente de atenuacion
+   
+	
+	glEnable(GL_LIGHTING);   //activacion de luces principales
+    glEnable(GL_LIGHT0);    //habilitacion de la luz 0
+    
+    glDepthFunc(GL_LESS);   //activacion de 3D
+    glEnable(GL_DEPTH_TEST);
+   
+    //implementacion de parametros LIGHT
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);             //posicion de la luz
+    glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, light_spot1);          //direccion
+    glLightfv(GL_LIGHT0, GL_SPOT_EXPONENT,light_exponent);
+    glLightfv(GL_LIGHT0, GL_SPOT_CUTOFF,light_cut);                //angulo de foco
+	glPolygonMode(GL_FRONT, GL_FILL);
+    glColorMaterial (GL_FRONT, GL_AMBIENT);	
+    glEnable(GL_COLOR_MATERIAL);
+    
+        //Parametros de las luces en material
+    
+    GLfloat Ambiente[4] = {1.0f,1.0f,1.0f,0.2f};            // luz ambiental
+    GLfloat Difusa[4] = {1.0f,1.0f,1.0f,0.2f};              //reflexion difusa
+    GLfloat Specular[4] = {1.0f,1.0f,1.0f,0.2f};            //Color de brillo
+    
+    /*
+    GLfloat Ambiente[4] = {0.6f,0.6f,0.6f,1.0f};            // luz ambiental
+    GLfloat Difusa[4] = {0.4f,0.4f,0.4f,1.0f};              //reflexion difusa
+    GLfloat Specular[4] = {0.9f,0.9f,0.9f,1.0f};            //Color de brillo
+    */
+    GLfloat Brillo = 100.0f;                             	//intensidad de brillo
+    
+    //implementacion de material
+    
+    glMaterialfv(GL_FRONT, GL_AMBIENT, Ambiente);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, Difusa);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, Specular);
+    glMaterialf(GL_FRONT, GL_SHININESS, Brillo);
+    
+    Ambiente[0] = 1;Ambiente[1]=1; Ambiente[2]=1;Ambiente[3]=0;            
+    //Luz global 
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT,Ambiente); //luz global
+    glPolygonMode(GL_FRONT, GL_FILL);
+    glColorMaterial (GL_FRONT, GL_AMBIENT);	
+    glEnable(GL_COLOR_MATERIAL);  //habilita el color del material
+    
+    
+    glEnable(GL_NORMALIZE); //para que los vectores automáticamente se hagan unitarios
+    
+    		glEnable(GL_LIGHTING);     //Activa el sistema de iluminación
+			glEnable(GL_LIGHT0);
+			glShadeModel(GL_SMOOTH); //Activa el sombreado Gouraud
+
+}
+
 void display(){   
+	luces();
 	
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 	
+	//Piso falso
+	glColor3f(0,0,0);
+	glBegin(GL_QUADS);
+		glVertex3f(-35, -15, -35);
+		glVertex3f(35, -15, -35);
+		glVertex3f(35, -15, 35);
+		glVertex3f(-35, -15, 35);
+	glEnd();
+	
+	///////////////////////////
+	//INICIO DE LA ANIMACION//
+	//////////////////////////
+	
 	cargarFondo();
 	glLoadIdentity();
-	
-	float pos[]={20.0,2.0,4.0,1.0},y;
-	glLightfv(GL_LIGHT0,GL_POSITION,pos);
-	
-	
-	glPolygonMode(GL_FRONT, GL_FILL);
-    glColorMaterial (GL_FRONT, GL_AMBIENT);	
-    glEnable(GL_COLOR_MATERIAL);
-	
+		
     glTranslatef(0,-7,0);
-    glPushMatrix();
-    //malla();
-    glRotatef(90,1,0,0);
-    //malla();
-    glPopMatrix();
     glColor3f(1,0.0,0.0);
-    if(yYunque<=9.5){
-	glPushMatrix();
-  //  glLoadIdentity();
+    
+    
+    if(yYunque<=9.5){			//el resorte se va a empezar a escalar hasta que el yunque llegue a menos de 9.5
+	glPushMatrix();				//vamos guardar el estado del entorno, metiendo a la pila estas transformaciones
+	float traslado=(yC*0.75); 	//calculamos el movimiento que tiene que hacer el resorte en y hacia el origen, .75 es la proporcion 
+	glTranslatef(0,traslado,0); //lo movemos 
+	glScalef(1,yC,1); 			//Lo escalamos
+    glCallList(resorte);		//y lo pintamos
+	glPopMatrix();				//sacamos de la pila estas transformaciones 
 	
-	
-	float traslado=(xc*0.75);
-	glTranslatef(0,traslado,0);
-	glScalef(1,xc,1);
-    glCallList(cube);
-	glPopMatrix();
-	xc+=incX;
-	
-	if(xc<=0.5 || xc >= 1.2){incX*=-1;if(xc>=1.2){
-		yYunque=15;}
+	yC+=incY;					//incrementamos a la variable YC con lo que tenga incY
+	printf("yC= %f  yYunque=%f \n",yC,yYunque);
+	if(yC<=0.3 || yC >= 1.2)	//este es la condicion para detectar cuando tiene que cambiar el sentido de la animacion 
+	{	
+		if(yC>=1.2 && yYunque<=15){
+			printf("yC= %f  yYunque=%f\n",yC,yYunque);
+			// Cuando el yunque llega a menos de 9.5 el resorte y el yunque bajan con la misma velocidad
+			glPushMatrix();					//Guardamos el estado del entorno
+			glTranslatef(3,(yC*8),0);		//Y lo movemos con la velocidad de yC *8, que es mas o menos la proporcion en y del yunque con respecto al resorte 
+			glScalef(0.8, 0.8, 0.8);		//Escalamos el yunque siempre con el mismo tamaño
+			glRotatef(90,0,1,0);			//Lo rotamos para tener su lado izquierdo
+			glCallList(yunque);				//Lo pintamos 
+			glPopMatrix();					//Regresamos al estado del entorno
+			
+			
+		yYunque+=0.001;
 		}
-	
-	//Yunque
-	glPushMatrix();
-	//glLoadIdentity();
-	
-    glTranslatef(3,(xc*8),0);
-    glScalef(0.8, 0.8, 0.8);
-    glRotatef(90,0,1,0);
-    glCallList(yunque);
-    glPopMatrix();
-    
-    
-	}else{
-			glPushMatrix();
-	//glLoadIdentity();
-
-	float traslado=(xc*0.75);
-	glTranslatef(0,traslado,0);
-	glScalef(1,xc,1);
-    glCallList(cube);
-    glPopMatrix();
-    
-    	glPushMatrix();
-   // glLoadIdentity();
-	
-    glTranslatef(3,yYunque,0);
-    glScalef(0.8, 0.8, 0.8);
-    glRotatef(90,0,1,0);
-    glCallList(yunque);
-    glPopMatrix();
-    
-			yYunque-=0.1;
+		printf("yC= %f  yYunque=%f",yC,yYunque);
+		incY*=-1;
 	}
-    //printf("traslado en x= %f \t valor de xc= %f\n",traslado,xc);
+	
+	// Cuando el yunque llega a menos de 9.5 el resorte y el yunque bajan con la misma velocidad
+	glPushMatrix();					//Guardamos el estado del entorno
+    glTranslatef(3,(yC*8),0);		//Y lo movemos con la velocidad de yC *8, que es mas o menos la proporcion en y del yunque con respecto al resorte 
+    glScalef(0.8, 0.8, 0.8);		//Escalamos el yunque siempre con el mismo tamaño
+    glRotatef(90,0,1,0);			//Lo rotamos para tener su lado izquierdo
+    glCallList(yunque);				//Lo pintamos 
+    glPopMatrix();					//Regresamos al estado del entorno
     
-	//glFlush();
-	//glutSwapBuffers();
+    
+	}else{  //Mientras el yunque no llega a menos de 9.5 el yunque se tiene que mover hacia abajo y el resorte quedarse igual
+			
+	//Pondremos el resorte en su lugar sin hacer nada 
+	glPushMatrix();					//Guardamos el estado del entorno
+	float traslado=(yC*0.75);		//calculamos el movimiento que tiene que hacer el resorte en y hacia el origen, .75 es la proporcion 
+	glTranslatef(0,traslado,0);		//Lo movemos 
+	glScalef(1,yC,1);				//Lo escalamos
+    glCallList(resorte);			//Lo pintamos
+    glPopMatrix();					//Regresamos al entorno
+    
+    
+    // El yunque es el que se va a mover hacia abajo
+	glPushMatrix();					//Guardamos el estado del entorno
+    glTranslatef(3,yYunque,0);		//Vamos traladandolo en Y , lo que vale yYunque
+    glScalef(0.8, 0.8, 0.8);		// Escalamos el yunque, este siempre es del mismo tamaño siempre
+    glRotatef(90,0,1,0);			// Lo rotamos para tener la cara izquierda del yunque 
+    glCallList(yunque);				//Lo pintamos
+    glPopMatrix();					//Regresamos al estado actual del entorno
+    
+	yYunque-=0.1;					//Decrementamos el valor de l caida del tunque en .1
+
+	}
+    
+    
+	
+	
 }
 
-
 int main(int argc,char** argv)
-{
+{	
 	SDL_Init(SDL_INIT_EVERYTHING);
 	SDL_Surface* screen=SDL_SetVideoMode(640,480,32,SDL_SWSURFACE|SDL_OPENGL);
 	bool running=true;
@@ -13626,9 +13725,7 @@ int main(int argc,char** argv)
 		{ pasox=-pasox; x=-5+2*pasox;
 		};
 		
-		angle+=0.5;
-		if(angle>360)
-		angle-=360;
+		
 		if(1000/30>(SDL_GetTicks()-start))
 		SDL_Delay(1000/30-(SDL_GetTicks()-start));
 		

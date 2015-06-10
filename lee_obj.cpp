@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-int posX = 15;
+int posX = 0, posY = 10, posZ = 45;
 
 /*Textura*/
 
@@ -13403,7 +13403,7 @@ void init()
 	glLoadIdentity();
 	gluPerspective(45,640.0/480.0,1.0,500.0);
 	//gluLookAt(15,5,25,0,0,0,0,16,0);
-	gluLookAt(0, 10, 45, 0, 0, 0, 0, 36, 0);
+	gluLookAt(posX, posY, posZ, 0, 0, 0, 0, posY+1, 0);
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_DEPTH_TEST);
 	
@@ -13529,20 +13529,6 @@ void cargarFondo(){
 	//glPopMatrix();	
 }
 
-
-void keyboard(unsigned char key, int x, int y){
-	float t;
-	
-	switch(key){
-		case 'q':
-			posX ++;
-		break;
-		
-		
-	}
-	
-}
-
 void luces(){ 
 	GLfloat luz_ambiental[] = { 1, 1, 1, 0.0 };
     GLfloat light_position[] = { 10, 10, 10,1}; //posicion de la luz X, Y , Z y direccional o no
@@ -13638,11 +13624,11 @@ void display(){
 	glPopMatrix();				//sacamos de la pila estas transformaciones 
 	
 	yC+=incY;					//incrementamos a la variable YC con lo que tenga incY
-	printf("yC= %f  yYunque=%f \n",yC,yYunque);
+	//printf("yC= %f  yYunque=%f \n",yC,yYunque);
 	if(yC<=0.3 || yC >= 1.2)	//este es la condicion para detectar cuando tiene que cambiar el sentido de la animacion 
 	{	
 		if(yC>=1.2 && yYunque<=15){
-			printf("yC= %f  yYunque=%f\n",yC,yYunque);
+			//printf("yC= %f  yYunque=%f\n",yC,yYunque);
 			// Cuando el yunque llega a menos de 9.5 el resorte y el yunque bajan con la misma velocidad
 			glPushMatrix();					//Guardamos el estado del entorno
 			glTranslatef(3,(yC*8),0);		//Y lo movemos con la velocidad de yC *8, que es mas o menos la proporcion en y del yunque con respecto al resorte 
@@ -13654,7 +13640,7 @@ void display(){
 			
 		yYunque+=0.001;
 		}
-		printf("yC= %f  yYunque=%f",yC,yYunque);
+		//printf("yC= %f  yYunque=%f",yC,yYunque);
 		incY*=-1;
 	}
 	
@@ -13695,6 +13681,9 @@ void display(){
 	
 }
 
+//Guardar evento de teclado
+SDL_Event evento;
+
 int main(int argc,char** argv)
 {	
 	SDL_Init(SDL_INIT_EVERYTHING);
@@ -13728,6 +13717,70 @@ int main(int argc,char** argv)
 		
 		if(1000/30>(SDL_GetTicks()-start))
 		SDL_Delay(1000/30-(SDL_GetTicks()-start));
+		
+		//Evento de teclado
+		while(SDL_PollEvent(&evento)){
+			if(evento.type == SDL_KEYDOWN){
+				//printf("Se oprimio una tecla, chavo\n");
+				
+				//Para ver que tecla se presiona (flechas)...
+				switch(evento.key.keysym.sym){
+					//Arriba
+					case SDLK_UP:
+						if(posY < 29){
+							posY += 1;
+							printf("POS Y: %i\n", posY);
+							init();
+						}
+					break;
+					
+					//Abajo
+					case SDLK_DOWN:
+						if(posY > 9){
+							posY -= 1;
+							printf("POS Y: %i\n", posY);
+							init();
+						}
+					break;
+					
+					//Izquierda
+					case SDLK_LEFT:
+						if(posX > -25){
+							posX -= 1;
+							printf("POS X: %i\n", posX);
+							init();
+						}
+					break;
+					
+					//Derecha
+					case SDLK_RIGHT:
+						if(posX < 25){
+							posX += 1;
+							printf("POS X: %i\n", posX);
+							init();
+						}
+					break;
+					
+					//Cerca
+					case SDLK_w:
+						if(posZ > 20){
+							posZ -= 1;
+							printf("POS Z: %i\n", posZ);
+							init();
+						}
+					break;
+					
+					//Lejos
+					case SDLK_s:
+						if(posZ < 50){
+							posZ += 1;
+							printf("POS Z: %i\n", posZ);
+							init();
+						}
+					break;
+				}
+			}
+		}
 		
 	}
 	SDL_Quit();
